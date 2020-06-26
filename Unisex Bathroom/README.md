@@ -1,0 +1,3 @@
+# Description: 
+
+Designed a concurrent program in C++ in a Linux system that computes the prefix sum of a given array in a file and exports the sum into an output file. This program was divided into two separate and independent programs to demonstrate the difference between the concurrency of threads and processes. The user was allowed to specify the number of threads and processes and algorithm accounted for any uneven amount of work to be done and threads/processes created. The processes were created using fork and it used my very own modification of an algorithm. The threads were created by the new thread function along with it, the boost barrier was used for concurrency control and ensure no overlapping critical sections.  
