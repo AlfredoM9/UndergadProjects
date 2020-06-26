@@ -12,5 +12,5 @@ Created a MIPS program that calculates the BMI of the user that inputs its name,
 ### FP Operations:
 Created a MIPS program that reads an input file into a buffer in memory. The string “numbers” are extracted from the file and converted into integers. The integers are then stored in an array. The array is then printed to the console. The array is then sorted using selection sort and followed by another print to the console. Finally, the program calculates the mean, median, and standard deviation followed by another print to the console. 
 
-###Overall:
+### Overall:
 Created a Java solution using semaphores to the unisex bathroom problem in which the user specifies the number of toilets available in a restroom. The problem is that men can enter if toilets are available and same goes for women, but one gender cannot enter if the opposite gender is in the restroom. The solution was done using threads and semaphores. The solution is also deadlock free so the threads should concurrently be doing work dependent on the semaphore.  
