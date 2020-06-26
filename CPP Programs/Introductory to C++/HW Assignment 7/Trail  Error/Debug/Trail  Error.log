@@ -1,0 +1,6 @@
+﻿  TrailError.cpp
+c:\users\axm180023\onedrive - the university of texas at dallas\fall 2018\cs 1336.003\cs 1336 hw assignments\cs 1336 vc++ projects\hw assignment 7\trail  error\trailerror.cpp(19): warning C4101: 'spaces': unreferenced local variable
+c:\users\axm180023\onedrive - the university of texas at dallas\fall 2018\cs 1336.003\cs 1336 hw assignments\cs 1336 vc++ projects\hw assignment 7\trail  error\trailerror.cpp(19): warning C4101: 'columnPattern2': unreferenced local variable
+c:\users\axm180023\onedrive - the university of texas at dallas\fall 2018\cs 1336.003\cs 1336 hw assignments\cs 1336 vc++ projects\hw assignment 7\trail  error\trailerror.cpp(19): warning C4101: 'rowPattern2': unreferenced local variable
+c:\users\axm180023\onedrive - the university of texas at dallas\fall 2018\cs 1336.003\cs 1336 hw assignments\cs 1336 vc++ projects\hw assignment 7\trail  error\trailerror.cpp(19): warning C4101: 'numberofAsterisks2': unreferenced local variable
+  Trail  Error.vcxproj -> C:\Users\AXM180023\OneDrive - The University of Texas at Dallas\Fall 2018\CS 1336.003\CS 1336 HW Assignments\CS 1336 VC++ Projects\HW Assignment 7\Trail  Error\Debug\Trail  Error.exe

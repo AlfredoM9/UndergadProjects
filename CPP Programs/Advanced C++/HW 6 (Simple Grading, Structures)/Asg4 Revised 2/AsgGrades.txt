@@ -1,0 +1,15 @@
+1231 Robert_Smith 91 87 72
+1233 Cheryl_Overton 98 91 89
+1234 Vishal_Sharda 86 92 93
+1239 Ramon_Gonzales 91 82 97
+1240 Hong_Chang 92 83 98
+1242 Misty_Sellers 81 91 92
+1243 Kim_Riley 99 92 93
+1246 John_Paulos 81 87 88
+1249 Scott_Wingo 100 91 99
+1251 Jacob_Needleman 97 83 96
+1252 Thomas_Paine 92 100 93
+1257 Wendy_Sarrett 81 91 79
+1262 Izu_Elechi 67 84 99
+1212 John_Cole 100 100 100
+1213 Poor_Student 49 50 51

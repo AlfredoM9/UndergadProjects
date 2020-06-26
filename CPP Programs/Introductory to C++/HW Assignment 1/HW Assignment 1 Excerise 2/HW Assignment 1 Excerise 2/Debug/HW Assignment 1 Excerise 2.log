@@ -1,0 +1,4 @@
+﻿C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\IDE\VC\VCTargets\Microsoft.CppBuild.targets(391,5): warning MSB8028: The intermediate directory (Debug\) contains files shared from another project (HW Assignment 1 Excerise 2.vcxproj).  This can lead to incorrect clean and rebuild behavior.
+  HW1_EX2.cpp
+c:\users\axm180023\onedrive - the university of texas at dallas\fall 2018\cs 1336.003\cs 1336 hw assignments\cs 1336 vc++ projects\hw assignment 1\hw assignment 1 excerise 2\hw assignment 1 excerise 2\hw1_ex2.cpp(21): warning C4305: '=': truncation from 'double' to 'float'
+  HW Assignment 1 Excerise 2.vcxproj -> C:\Users\AXM180023\OneDrive - The University of Texas at Dallas\Fall 2018\CS 1336.003\CS 1336 HW Assignments\CS 1336 VC++ Projects\HW Assignment 1\HW Assignment 1 Excerise 2\Debug\HW 1 Excerise 2.exe

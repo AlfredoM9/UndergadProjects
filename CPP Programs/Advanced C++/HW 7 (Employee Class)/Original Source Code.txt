@@ -1,0 +1,374 @@
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <iomanip>
+#include <cctype>
+#include "Employee.h"
+using namespace std;
+
+int displayMenu();
+bool checkFile(ifstream &inputFile);
+int getData(Employee* employee[], const int MAX_EMPLOYEES, ifstream &inputFile);
+void getEmployeeInfo(Employee* employee[], int &numOfEmployees, const int MAX_EMPLOYEES);
+bool checkID(const string ID, const Employee* const employee[], const int numOfEmployees);
+void displayEmployeeInfo(Employee* employee[], const int numOfEmployees);
+string searchID(Employee* employee[], const int numOfEmployees);
+void removeEmployee(Employee* employee[], int &numOfEmployees);
+void saveData(Employee* employee[], const int numOfEmployees);
+int main()
+{
+   ifstream inputFile;
+   bool fileStored = checkFile(inputFile);
+
+   int numOfEmployees = 0;      
+   const int MAX_EMPLOYEES = 100;
+   Employee* employee[MAX_EMPLOYEES];
+
+   for (int count = 0; count < MAX_EMPLOYEES; count++)
+      employee[count] = nullptr;
+
+   if (fileStored)
+      numOfEmployees = getData(employee, MAX_EMPLOYEES, inputFile);
+
+   int userChoice;
+   do
+   {
+      userChoice = displayMenu();
+      switch (userChoice)
+      {
+      case 1:
+         getEmployeeInfo(employee, numOfEmployees, MAX_EMPLOYEES);
+         break;
+      case 2:
+         displayEmployeeInfo(employee, numOfEmployees);
+         break;
+      case 3:
+         searchID(employee, numOfEmployees);
+         break;
+      case 4:
+         removeEmployee(employee, numOfEmployees);
+         break;
+      case 5:
+         saveData(employee, numOfEmployees);
+      }
+   } while (userChoice != 5);
+   inputFile.close();
+
+   system("pause");
+   return 0;
+}
+
+int displayMenu()
+{
+   int userChoice;
+   bool notValid = true;
+   do
+   {
+      cout << "Please select a choice from the following:" << endl;
+      cout << "1. Enter new employee information" << endl;
+      cout << "2. Display all employee information in alphabetical order by last name" << endl;
+      cout << "3. Look up an an employee by ID" << endl;
+      cout << "4. Remove an employee" << endl;
+      cout << "5. Save all data to Employee.txt & exit" << endl;
+
+      if (cin >> userChoice)
+      {
+         if (userChoice < 1 || userChoice > 5)
+            cout << "An invalid entry has been entered" << endl;
+         else
+            notValid = false;
+      }
+
+      else
+      {
+         cin.clear();
+         cin.ignore();
+         cout << "An invalid entry has been entered" << endl;
+      }
+   } while (notValid);
+
+   return userChoice;
+}
+
+bool checkFile(ifstream & inputFile)
+{
+   inputFile.open("Employee.txt");
+
+   if (inputFile.fail())
+      return false;
+   else
+      return true;
+}
+
+int getData(Employee* employee[], const int MAX_NUM, ifstream & inputFile)
+{
+   int count = 0, numOfEmployees = 0;
+   bool fileValid = true;
+   while (!inputFile.eof() && fileValid)
+   {
+      if (count < MAX_NUM && !inputFile.eof())
+      {
+         employee[count] = new Employee;
+         employee[count]->setData(inputFile);
+         numOfEmployees++;
+      }
+
+      else
+         fileValid = false;
+
+      count++;
+   }
+
+   if (!fileValid)
+   {
+      cout << "An error has occured. The size of the file is too large for the maximum number of employees. All the data following employee ID: "
+         << employee[99]->getEmployeeID() << " was not recorded in the program." << endl;
+   }
+
+   return numOfEmployees;
+}
+
+void getEmployeeInfo(Employee* employee[], int &numOfEmployees, const int MAX_EMPLOYEES)
+{
+   if (numOfEmployees == 100)
+      cout << "The file has occupied the maximum number of employees. Please either remove an employee or check the file for issues" << endl;
+
+   else
+   {
+      bool valid = true;
+      char userChoice;
+      do
+      {
+         string tempID, tempLastName, tempFirstName, tempDOB, tempStartDate;
+         char tempGender;
+         double tempSalary;
+         cout << "Please enter the following information: " << endl;
+         if (numOfEmployees > 0)
+         {
+            bool validID = false;
+            do
+            {
+               cout << "Employee ID: ";
+               cin >> tempID;
+               validID = checkID(tempID, employee, numOfEmployees);
+               if (!validID)
+                  cout << "This ID has been used by another employee. Please try again" << endl;
+            } while (!validID);
+         }
+         else
+         {
+            cout << "Employee ID: ";
+            cin >> tempID;
+         }
+         
+         cout << "Employee last name: ";
+         cin >> tempLastName;
+         cout << "Employee first name: ";
+         cin >> tempFirstName;
+         cout << "Employee Date of Birth (MM/DD/YYYY): ";
+         cin >> tempDOB;
+         do
+         {
+            cout << "Employee's gender M or F: ";
+            cin >> tempGender;
+            if (toupper(tempGender) != 'M' && toupper(tempGender) != 'F')
+               cout << "Please enter a valid character" << endl;
+         } while (toupper(tempGender) != 'M' && toupper(tempGender) != 'F');
+         cout << "Employee's start date (MM/DD/YYYY): ";
+         cin >> tempStartDate;
+         bool notValidPay = true;
+         do
+         {
+            cout << "Employee's salary per year: ";
+            if (cin >> tempSalary)
+            {
+               if (tempSalary <= 0)
+                  cout << "Please enter a valid salary: " << endl;
+               else
+                  notValidPay = false;
+            }
+            else
+            {
+               cout << "Please enter a valid salary: " << endl;
+               cin.clear();
+               cin.ignore();
+            }
+         } while (tempSalary <= 0);
+         employee[numOfEmployees] = new Employee(tempID, tempLastName, tempFirstName, tempDOB, tempGender, tempStartDate, tempSalary);
+         numOfEmployees++;
+         if (numOfEmployees == MAX_EMPLOYEES)
+         {
+            cout << "The maximum number of employees has been reached." << endl;
+            valid = false;
+         }
+
+         else
+         {
+            do
+            {
+               cout << "Would you like to add another employee (Y or N): ";
+               cin >> userChoice;
+               userChoice = toupper(userChoice);
+               if (userChoice != 'Y' && userChoice != 'N')
+                  cout << "Please enter a valid character" << endl;
+            } while (userChoice != 'Y' && userChoice != 'N');
+         }
+      } while (valid && userChoice == 'Y');
+   }
+
+}
+
+bool checkID(const string ID, const Employee* const employee[], const int numOfEmployees)
+{
+   bool validID = true;
+   for (int count = 0; count < numOfEmployees; count++)
+   {
+      if (ID == employee[count]->getEmployeeID())
+         validID = false;
+   }
+
+   return validID;
+}
+
+void displayEmployeeInfo(Employee* employee[], const int numOfEmployees)
+{
+   if (numOfEmployees == 0)
+      cout << "There are no employees recorded" << endl;
+
+   else
+   {
+
+      for (int max = (numOfEmployees - 1); max > 0; max--)
+         for (int count = 0; count < max; count++)
+            if ((employee[count]->getLastName()) > (employee[count + 1]->getLastName()))
+            {
+               Employee temp(employee[count]->getEmployeeID(), employee[count]->getLastName(), employee[count]->getFirstName(), employee[count]->getBirthDate(), employee[count]->getGender(), employee[count]->getStartDate(), employee[count]->getSalary());
+
+               // Switch the contents
+               (*employee[count]) = (*employee[count + 1]);
+
+               // Switch the cotents
+               (*employee[count + 1]) = temp;
+            }
+      cout << left << setw(10) << "ID" << left << setw(20) << "Last Name" << left << setw(20) << "First Name"
+         << left << setw(20) << "DOB" << left << setw(10) << "Gender" << left << setw(20)
+         << "Start Date" << left << setw(10) << "Salary" << endl;
+      for (int count = 0; count < numOfEmployees; count++)
+      {
+
+         cout << left << setw(10) << employee[count]->getEmployeeID()
+            << left << setw(20) << employee[count]->getLastName()
+            << left << setw(20) << employee[count]->getFirstName()
+            << left << setw(20) << employee[count]->getBirthDate()
+            << left << setw(10) << employee[count]->getGender()
+            << left << setw(20) << employee[count]->getStartDate()
+            << left << setw(10) << "$" << static_cast<int>(employee[count]->getSalary() + 0.5) << endl;
+      } // end for loop for displaying
+      cout << endl;
+   }
+} // end outer most if statement
+
+string searchID(Employee* employee[], const int numOfEmployees)
+{
+
+   bool notFound = true;
+   string tempID;
+   if (numOfEmployees == 0)
+      cout << "There are no employees recorded" << endl;
+   else
+   {
+      int position = -1;
+      cout << "Please enter the ID you want to search ";
+      cin >> tempID;
+
+      for (int count = 0; count < numOfEmployees && notFound; count++)
+      {
+         if (tempID == employee[count]->getEmployeeID())
+         {
+            position = count;
+            notFound = false;
+         }
+      }
+
+      if (notFound)
+         cout << "The ID entered was not found. Please try again." << endl;
+      else
+      {
+         cout << left << setw(10) << "ID" << left << setw(20) << "Last Name" << left << setw(20) << "First Name"
+            << left << setw(20) << "DOB" << left << setw(10) << "Gender" << left << setw(20)
+            << "Start Date" << left << setw(10) << "Salary" << endl;
+         cout << left << setw(10) << employee[position]->getEmployeeID()
+            << left << setw(20) << employee[position]->getLastName()
+            << left << setw(20) << employee[position]->getFirstName()
+            << left << setw(20) << employee[position]->getBirthDate()
+            << left << setw(10) << employee[position]->getGender()
+            << left << setw(20) << employee[position]->getStartDate()
+            << left << setw(10) << "$" << static_cast<int>(employee[position]->getSalary() + 0.5) << endl;
+      }
+
+   }
+   cout << endl;
+   if (notFound)
+      return "notValid";
+   else
+      return tempID;
+}
+
+void removeEmployee(Employee* employee[], int &numOfEmployees)
+{
+   string validID;
+   validID = searchID(employee, numOfEmployees);
+   
+   if (validID != "notValid")
+   {
+      int loopDone = false;
+      cout << "The following information of the employee above will be deleted" << endl;
+      for (int count = 0; count < numOfEmployees && !loopDone; count++)
+      {
+         if (validID == employee[count]->getEmployeeID())
+         {
+            for (int count2 = count; count2 < (numOfEmployees - 1); count2++)
+            {
+               (*employee[count2]) = (*employee[count2 + 1]);
+            }
+            loopDone = true;
+         }
+      }
+      if (loopDone)
+      {
+         Employee *deleteptr;
+         deleteptr = employee[numOfEmployees - 1];
+         delete deleteptr;
+         deleteptr = nullptr;
+         employee[numOfEmployees - 1] = nullptr;
+         numOfEmployees--;
+      }
+      cout << "The following employee with the ID " << validID << " has been successfully deleted" << endl;
+   }
+}
+
+void saveData(Employee* employee[], const int numOfEmployees)
+{
+   ofstream outputFile;
+   outputFile.open("Employee.txt");
+   if (numOfEmployees == 0)
+      cout << "The following file has been created \"Employee.txt\", however there was no employees recorded, so the file is empty" << endl;
+
+   else
+   {
+
+      for (int count = 0; count < numOfEmployees; count++)
+      {
+         outputFile << employee[count]->getEmployeeID()
+            << " " << employee[count]->getLastName()
+            << " " << employee[count]->getFirstName()
+            << " " << employee[count]->getBirthDate()
+            << " " << employee[count]->getGender()
+            << " " << employee[count]->getStartDate()
+            << " " << "$" << employee[count]->getSalary() << endl;
+      }
+      cout << "The file was succesfully created and data has been transfered into the file" << endl;
+   }
+
+   outputFile.close();
+}

@@ -1,0 +1,4 @@
+﻿  lesson9part2.cpp
+c:\users\axm180023\onedrive - the university of texas at dallas\fall 2018\cs1136.103\cs 1136 lab 9\lab 9 part 2\lesson9part2.cpp(88): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
+c:\users\axm180023\onedrive - the university of texas at dallas\fall 2018\cs1136.103\cs 1136 lab 9\lab 9 part 2\lesson9part2.cpp(99): warning C4715: 'readData': not all control paths return a value
+  Lab 9 Part 2.vcxproj -> C:\Users\AXM180023\OneDrive - The University of Texas at Dallas\Fall 2018\CS1136.103\CS 1136 Lab 9\Lab 9 Part 2\Debug\Lab 9 Part 2.exe

@@ -1,0 +1,258 @@
+#include <iostream>
+#include "NumberList.h"
+
+using namespace std;
+
+/******************************************************************************************
+FUNCT: insertNode
+DESCR: This will accept a double as a parameter. It will then perform insertion sort and 
+	   it will insert the new node in the appropriate place.
+*******************************************************************************************/
+void NumberList::insertNode(double num)
+{
+	ListNode *newNode;
+	ListNode *nodePtr;
+	ListNode *previousNode = nullptr;
+
+	// Create a new node and initialize it
+	newNode = new ListNode;
+	newNode->value = num;
+
+	// If the head is pointing to null
+	if (!head)
+	{
+		// Make it point to the new node
+		head = newNode;
+
+		// Make the node point to null
+		newNode->next = nullptr;
+	} // end if
+
+	else
+	{
+		// Initialize the pointer with what the pointer is pointing at
+		nodePtr = head;
+
+		// Initialize the previous node
+		previousNode = nullptr;
+
+		// while the nodeptr doesn't point to null and it is less than the num
+		while (nodePtr != nullptr && nodePtr->value < num)
+		{
+			// Then move to the next node
+			previousNode = nodePtr;
+			nodePtr = nodePtr->next;
+		} // end while
+
+		// If the previous node points to null then it didn't move
+		if (previousNode == nullptr)
+		{
+			// Initialize the head to the new node
+			head = newNode;
+
+			// Make it point to what the head of pointing at first
+			newNode->next = nodePtr;
+		} // end if
+
+		// Otherwise
+		else
+		{
+			// Make the previous node point to the new node
+			previousNode->next = newNode;
+
+			// Make the new node point to the node in front of it
+			newNode->next = nodePtr;
+		} // end else
+	} // end outer else
+} // end insertNode
+
+/**************************************************************
+FUNCT: displayList
+DESCR: It will go through the list and display the entire list
+****************************************************************/
+void NumberList::displayList() const
+{
+	// Temporary pointer
+	ListNode *nodePtr;
+
+	nodePtr = head;
+
+	// While it doesn't point to null
+	while (nodePtr)
+	{
+		// Display node and continue
+		cout << nodePtr->value << endl;
+		nodePtr = nodePtr->next;
+	} // end while
+} // end displayList
+
+/**********************************************************************
+FUNCT: destroyList
+DESCR: This function will go through each node and delete its content
+***********************************************************************/
+void NumberList::destroyList() const
+{
+	// Temporary pointers
+	ListNode *nodePtr;
+	ListNode *nextNode;
+
+	nodePtr = head;
+
+	// While the pointer doesn't point to null
+	while (nodePtr != nullptr)
+	{
+		// Make sure to get the connection to the other node before deleteing
+		nextNode = nodePtr->next;
+
+		// Then delete
+		delete nodePtr;
+
+		// Then get the node that continues
+		nodePtr = nextNode;
+	} // end while
+} // end destroy list
+
+
+
+
+
+
+
+
+
+#pragma once
+
+class NumberList
+{
+private:
+	// Struct for the node
+	struct ListNode
+	{
+		double value;
+		struct ListNode *next;
+	};
+
+	// The head node
+	ListNode *head;
+
+public:
+
+	// Constructor
+	NumberList()
+	{ 
+		head = nullptr;
+	}
+
+	// Functions
+	void insertNode(double);
+	void displayList() const;
+	void destroyList() const;
+};
+
+
+
+#include <iostream>
+#include <string>
+#include <fstream>
+#include "NumberList.h"
+
+using namespace std;
+
+// Functions
+string displayMenu(ifstream&);
+void getData(ifstream&);
+
+// main function
+int main()
+{
+	// Hold file name
+	string fileName;
+	do
+	{
+		// Create an input stream object
+		ifstream inputFile;
+
+		// Call displayMenu function and returns input
+		fileName = displayMenu(inputFile);
+
+		// If user doesn't want to exit
+		if (fileName != "*")
+
+			// Get the data
+			getData(inputFile);
+
+	} while (fileName != "*"); // Exit when user enters an asterisk
+
+	cout << "The program has ended" << endl;
+
+	system("pause");
+
+	return 0;
+} // end main
+
+/************************************************************************************************************************
+FUNCT: displayMenu
+DESCR: This function accepts a reference object of ifstream. It will ask for a file name and it will validate that it 
+	   either entered a valid file name or an asterisk to exit the program. Once the input has been validated it will 
+	   return the input.
+*************************************************************************************************************************/
+string displayMenu(ifstream & inputFile)
+{
+	// Variables for input and a flag for the loop
+	string tempFile;
+	bool invalid = true;
+	do
+	{
+		// Display prompt
+		cout << "Please enter a file name or enter \"*\" to exit the program." << endl;
+		cin >> tempFile;
+
+		// If user wants to exit
+		if (tempFile == "*")
+			invalid = false;
+
+		// Otherwise check if it's a valid file name
+		else
+		{
+			inputFile.open(tempFile);
+
+			if (inputFile)
+				invalid = false;
+			else
+				cout << "An error has occurred." << endl;
+		} // end else
+	} while (invalid); // while input is not valid
+
+	// return user input
+	return tempFile;
+} // end displayMenu
+
+/******************************************************************************************************
+FUNCT: getData
+DESCR: The function will accept the ifstream object. It will then pass every number to the list.
+	   While at the same time sorting it using insertion sort. It will then display the numbers
+	   and delete the lsit.
+********************************************************************************************************/
+void getData(ifstream & inputFile)
+{
+	// Create object
+	NumberList list;
+
+	// Temporary variable to hold the data
+	double num;
+
+	// While there is data in the file
+	while (inputFile >> num)
+		list.insertNode(num);
+
+	// Display and delete
+	list.displayList();
+	list.destroyList();
+
+} // end getData
+
+
+
+
+
+

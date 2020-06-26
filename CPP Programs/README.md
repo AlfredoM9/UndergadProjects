@@ -1,0 +1,2 @@
+# Description
+Created numerous C++ projects throughout my years at my university. Ranging from learning how to code in C++ by using simple variables to more complex programs that are object oriented and use polymorphism. In addition, many data structures have been used throughout the C++ projects such as linked lists, trees, and more. See GitHub for more details.
