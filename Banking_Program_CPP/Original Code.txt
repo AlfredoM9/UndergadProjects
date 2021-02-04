@@ -1,0 +1,760 @@
+/*************************************************************************************
+																					 *
+Author:     Alfredo Mejia                                                            *
+Course:     CS 1337.009                                                              *
+Date:       4/10/19                                                                  *
+Assignment: HW Assignment 6                                                          *
+Compiler:   Visual Studios C++ 2017                                                  *
+																					 *
+Description: This program will serve as a menu for a bank. The menu will consist of  *
+			 of seven options. The first option will allow for the creation of a     *
+			 savings account. It will ask for the name of the user and for the       *
+			 creation of a unique account number. Then the account will be saved     *
+			 and the user can now deposit, withdraw, and have interest rate added.   *
+			 The next option will be the creation of a checking account. It will     *
+			 ask for a name and a unique account number. The account will be created *
+			 and the user can use its services. The third option is creating a bank  *
+			 account in which it will show the type of accounts that the bank has.   *
+			 The user will choose what type of account and that type will be created.*
+			 The fourth option is to deposit. The unique account number will be asked*
+			 along with the amount of dollars. Then the new balance will be shown.   *
+			 The fifth option is to withdraw, the account number will be asked along *
+			 with the withdrawal amount and a message will appear if insufficient    *
+			 balance or the new balance will appear. The sixth option will be to     *
+			 display all accounts based on account type. The seven option will be    *
+			 to determine new balance after the interest is added. It will ask for   *
+			 account number and determine if it is a savings account. Then it will   *
+			 ask for the number of days past and display new balance. Finally the    *
+			 last option is to exit the program.                                     *
+																					 *
+**************************************************************************************/
+#include <iostream>
+#include <string>
+#include <cctype>
+#include <iomanip>
+#include"Bank.h"
+using namespace std;
+
+//Function Prototypes
+int displayMenu();
+void createSavings(Bank *accounts[], const int MAX_ACCTS, int &numOfAccts);
+void createChecking(Bank *accounts[], const int MAX_ACCTS, int &numOfAccts);
+void createAccount(Bank *accounts[], const int MAX_ACCTS, int &numOfAccts);
+bool searchAcctNum(Bank *accounts[], const int numOfAccts, int accountNum);
+void deposit(Bank *accounts[], const int numOfAccts);
+void withdraw(Bank *accounts[], const int numOfAccts);
+void displayAccountInfo(Bank *accounts[], const int numOfAccts);
+void addInterest(Bank *accounts[], const int numOfAccts);
+
+// main function
+int main()
+{
+	// Create a variable to count the number of accounts
+	int numOfAccts = 0;
+
+	// Create array of pointers
+	const int MAX_ACCTS = 100;
+	Bank *accounts[MAX_ACCTS];
+	for (int count = 0; count < MAX_ACCTS; count++)
+		accounts[count] = nullptr;
+
+	// Do-while for the user's choice
+	int userChoice;
+	do
+	{
+		// Call displayMenu and store user's choice
+		userChoice = displayMenu();
+
+		// Switch case with user's choice
+		switch (userChoice)
+		{
+		case 1:
+			createSavings(accounts, MAX_ACCTS, numOfAccts);
+			break;
+		case 2:
+			createChecking(accounts, MAX_ACCTS, numOfAccts);
+			break;
+		case 3:
+			createAccount(accounts, MAX_ACCTS, numOfAccts);
+			break;
+		case 4:
+			deposit(accounts, numOfAccts);
+			break;
+		case 5:
+			withdraw(accounts, numOfAccts);
+			break;
+		case 6:
+			displayAccountInfo(accounts, numOfAccts);
+			break;
+		case 7:
+			addInterest(accounts, numOfAccts);
+			break;
+		case 8:
+			cout << "The program has ended" << endl;
+		} // end of case
+	} while (userChoice != 8); // while user does not choose option 8
+
+	// Delete allocated memory
+	for (int count = 0; count < numOfAccts; count++)
+	{
+		delete accounts[count];
+		accounts[count] = nullptr;
+	} // end for loop
+
+	system("pause");
+	return 0;
+} // end while loop
+
+/**********************************************************************************************************************
+FUNCT: displayMenu
+DESCR: This function will display a menu and perform input validation to ensure the user chooses one correct option. 
+	   The user's choice will be returned.
+************************************************************************************************************************/
+int displayMenu()
+{
+	// Create variables to control loop and store user's choice
+	int userChoice;
+	bool notValid = true;
+
+	// Display menu
+	do
+	{
+		cout << "Please select one option from the following choices: (1, 2, 3, 4, 5, 6, 7)" << endl;
+		cout << "1. Create Savings Account" << endl;
+		cout << "2. Create Checking Account" << endl;
+		cout << "3. Create a Bank Account" << endl;
+		cout << "4. Deposit into Existing Account" << endl;
+		cout << "5. Withdraw from Existing Account" << endl;
+		cout << "6. Display information of all accounts" << endl;
+		cout << "7. Determine new balance of Savings Account" << endl;
+		cout << "8. Exit program" << endl;
+
+		// If a valid int is entered
+		if (cin >> userChoice)
+		{
+			// If the choice out of range display error message
+			if (userChoice < 1 || userChoice > 8)
+				cout << "An invalid entry has been entered" << endl;
+
+			// If choice valid set the flag to false
+			else
+				notValid = false;
+		} // end if statement
+
+		// If an int wasn't entered display error message and clear the buffer
+		else
+		{
+			cin.clear();
+			cin.ignore(100, '\n');
+			cout << "An invalid entry has been entered" << endl;
+		} // end else statement
+		cout << endl;
+	} while (notValid); // while the user's choice is not valid
+
+	// return user's choice
+	return userChoice;
+} // end displayMenu
+
+/*****************************************************************************************************************************************
+FUNCT: createSavings
+DESCR: This function will accept the array of pointers, the number of maximum number of accounts the bank can hold, and the
+	   number of actual accounts saved. If there limit has not been reached, then a new savings account will be created. It
+	   will display the necessary information about the particular account type and then it will ask for a name for the 
+	   account. It will then ask for a unique account number and perform input validation to ensure it is a number and it
+	   is unique. Once it's verified the account will be created.
+******************************************************************************************************************************************/
+void createSavings(Bank *accounts[], const int MAX_ACCTS, int &numOfAccts)
+{
+	// If the maximum number of accounts have been reached display message
+	if (numOfAccts > MAX_ACCTS)
+		cout << "The maximum number of accounts have been reached." << endl;
+
+	else
+	{
+		// Create a savings object
+		accounts[numOfAccts] = new Savings;
+		const double INTEREST_RATE = 0.0245;
+		const int COMPOUND_PERIOD = 30;
+
+		// Assign the interest rate and compound period
+		static_cast<Savings*>(accounts[numOfAccts])->setInterestRate(INTEREST_RATE);
+		static_cast<Savings*>(accounts[numOfAccts])->setCompoundPeriod(COMPOUND_PERIOD);
+
+		// Variables for the name, account number, and a flag for the loop
+		int accountNum;
+		string name;
+		bool invalid = true;
+
+		// Display information about the account
+		cout << "You are about to create a savings account." << endl;
+		cout << "At this bank, we have an interest rate of " << (INTEREST_RATE * 100) << "%." << endl;
+		cout << "Our compounding period consists of " << COMPOUND_PERIOD << " days" << endl;
+		cout << "Now let's get started. Please enter your name:" << endl;
+		cin.ignore();
+
+		// Store name
+		getline(cin, name);
+
+		do
+		{
+			// Ask for a unique number
+			cout << "Please enter a unique account number:" << endl;
+			// If int is entered
+			if (cin >> accountNum)
+			{
+				// If it is not taken by another account
+				if (!searchAcctNum(accounts, numOfAccts, accountNum))
+					// Set flag to false
+					invalid = false;
+				// Otherwise display message
+				else
+					cout << "The account number entered has already been taken by another account holder. Please try again" << endl;
+			} // end if
+			
+			// If an int is not entered
+			else
+			{
+				// Display message
+				cout << "An invalid entry has been entered. Please try again" << endl;
+				cin.clear();
+				cin.ignore(100, '\n');
+			} // end else
+
+		} while (invalid); // while input is invalid
+
+		// Initialize the data gathered
+		accounts[numOfAccts]->setName(name);
+		accounts[numOfAccts]->setAccountNum(accountNum);
+		accounts[numOfAccts]->setAcctType('S');
+
+		// Increment the number of accounts
+		numOfAccts++;
+
+		// Display message of creation of the account
+		cout << "Your savings account has been successfully created." << endl;
+		cout << "You can now deposit, withdraw, and see your new balance after compound periods have elapsed." << endl;
+	} // end outer most else
+	cout << endl;
+} // end createSavings
+
+/*****************************************************************************************************************************************
+FUNCT: createChecking
+DESCR: This function will accept the array of pointers, the number of maximum number of accounts the bank can hold, and the
+	   number of actual accounts saved. If there limit has not been reached, then a new checking account will be created. It
+	   will display the necessary information about the particular account type and then it will ask for a name for the
+	   account. It will then ask for a unique account number and perform input validation to ensure it is a number and it
+	   is unique. Once it's verified the account will be created.
+******************************************************************************************************************************************/
+void createChecking(Bank *accounts[], const int MAX_ACCTS, int &numOfAccts)
+{
+	// If the maximum number of accounts have been reached display message
+	if (numOfAccts > MAX_ACCTS)
+		cout << "The maximum number of accounts have been reached." << endl;
+	else
+	{
+		// Create checking object
+		accounts[numOfAccts] = new Checking;
+		double MIN_BALANCE = 100;
+		double MONTHLY_FEE = 10.50;
+
+		// Assign the minimum balance and monthly fee
+		static_cast<Checking*>(accounts[numOfAccts])->setMinBalance(MIN_BALANCE);
+		static_cast<Checking*>(accounts[numOfAccts])->setMonthlyFee(MONTHLY_FEE);
+
+		// Variables for the name, account number, and a flag for the loop
+		int accountNum;
+		string name;
+		bool invalid = true;
+
+		// Display information about the account
+		cout << "You are about to create a checking account." << endl;
+		cout << "At this bank the minimum balance for a checking account is $" << fixed << setprecision(2) << MIN_BALANCE << endl;
+		cout << "In addition, our monthly fee is $" << fixed << setprecision(2) << MONTHLY_FEE << endl;
+		cout << "Now let's get started. Please enter your name:" << endl;
+		cin.ignore();
+
+		// Store the name
+		getline(cin, name);
+
+		do
+		{
+			// Ask for a unique number
+			cout << "Please enter a unique account number:" << endl;
+			
+			// If an int is entered
+			if (cin >> accountNum)
+			{
+				// If it does not match with other account holders, set the flag to false
+				if (!searchAcctNum(accounts, numOfAccts, accountNum))
+					invalid = false;
+				// Otherwise display message
+				else
+					cout << "The account number entered has already been taken by another account holder. Please try again" << endl;
+			} // end if
+
+			// If an int is not entered, display message
+			else
+			{
+				cout << "An invalid entry has been entered. Please try again" << endl;
+				cin.clear();
+				cin.ignore(100, '\n');
+			} // end else
+		} while (invalid); // while the input is invalid
+
+		// Initialize the object with the information gathered
+		accounts[numOfAccts]->setName(name);
+		accounts[numOfAccts]->setAccountNum(accountNum);
+		accounts[numOfAccts]->setAcctType('C');
+
+		// Increment the number of accounts
+		numOfAccts++;
+
+		// Display message about the creation of the account
+		cout << "Your checking account has been successfully created." << endl;
+		cout << "You can now deposit, withdraw, and see your new balance." << endl;
+	} // end outer most else
+	cout << endl;
+} // end createChecking
+
+/***************************************************************************************************************************
+FUNCT: createAccount
+DESCR: This function will accept an array of pointer, the maximum number of accounts, and the actual number of accounts.
+	   It will first determine if the maximum has been reached. If it hasn't then it will display the type of accounts
+	   the bank has. It will then ask for the user to choose one. After input validation, depending on the user's
+	   choice it will call the function of createSavings or createChecking. Thus it will ultimately create a savings
+	   or checking account.
+****************************************************************************************************************************/
+void createAccount(Bank *accounts[], const int MAX_ACCTS, int &numOfAccts)
+{
+	// If maximum number of accounts have been reached display message
+	if (numOfAccts > MAX_ACCTS)
+		cout << "The maximum number of accounts have been reached." << endl;
+
+	else
+	{
+		// Display the type of accounts this bank has
+		cout << "You are about to create a bank account." << endl;
+		cout << "First you must decide which type of account you would like." << endl;
+		cout << "We have two types of accounts: Savings and Checking" << endl;
+
+		// Variables for the user's choice and a flag
+		short userChoice;
+		bool invalid = true;
+
+		do
+		{
+			// Display mini-menu
+			cout << "So, which account would you like a savings or a checking? (1 or 2)" << endl;
+			cout << "1. Saving \n2. Checking \n";
+			
+			// If an int is entered
+			if (cin >> userChoice)
+			{
+				// If an invalid int is entered display error message
+				if (userChoice < 1 || userChoice > 2)
+					cout << "An invalid entry has been entered. Please try again." << endl;
+				// Otherwise set the flag to false
+				else
+					invalid = false;
+			} // end if
+
+			// If an int is not entered display error message
+			else
+			{
+				cout << "An invalid entry has been entered. Please try again." << endl;
+				cin.clear();
+				cin.ignore(100, '\n');
+			} // end else
+
+		} while (invalid); // while input is invalid
+
+		// If user choose option one call create savings
+		if (userChoice == 1)
+			createSavings(accounts, MAX_ACCTS, numOfAccts);
+		// Otherwise call create checking
+		else
+			createChecking(accounts, MAX_ACCTS, numOfAccts);
+	} // end outer most else
+} // end createAccount
+
+/***********************************************************************************************************************
+FUNCT: searchAcctNum
+DESCR: This function will accept the array of pointers, the number of accounts, and temporary account number.
+	   It will determine if the account number entered matches any account holder by using a for loop. If
+	   the temporary account number matches any account number of any account holder it will return true otherwise
+	   it will return false.
+**************************************************************************************************************************/
+bool searchAcctNum(Bank *accounts[], const int numOfAccts, int accountNum)
+{
+	// Set the variable to false
+	bool found = false;
+
+	// Loop through all accounts
+	for (int count = 0; count < numOfAccts; count++)
+	{
+		// If it matches to the temporary account number then set found to true
+		if (accounts[count]->getAccountNum() == accountNum)
+			found = true;
+	} // end for loop
+
+	// return found
+	return found;
+} // end searchAcctNum
+
+/********************************************************************************************************************
+FUNCT: deposit
+DESCR: This function will accept the array of pointers, holding the accounts, and the number of accounts.
+	   If there are no accounts then a message will be displayed. Otherwise the user will enter the 
+	   account number for which the user wishes to deposit to. If a matching account is found then the amount
+	   will be inserted. Otherwise a message will be displayed. Input validation will occur for the account
+	   number and deposit amount. Then it will add the amount to the balance for that account. It will then
+	   show the new balance
+**********************************************************************************************************************/
+void deposit(Bank *accounts[], const int numOfAccts)
+{
+	// If no accounts saved display message
+	if (numOfAccts == 0)
+		cout << "There are no accounts saved." << endl;
+	else
+	{
+		// Variables to hold temporary account number and a flag
+		int tempAcctNum;
+		bool invalid = true;
+
+		do
+		{
+			// Ask for the account number 
+			cout << "Please enter the account number from which you want to deposit to: " << endl;
+
+			// Input validation
+			if (cin >> tempAcctNum)
+			{
+				// If found set flag to false
+				if (searchAcctNum(accounts, numOfAccts, tempAcctNum))
+					invalid = false;
+
+				// Otherwise display message
+				else
+					cout << "No account was found with such account number" << endl;
+			} // end if
+
+			// Not an int so display message
+			else
+			{
+				cout << "An invalid entry has been entered. Please try again." << endl;
+				cin.clear();
+				cin.ignore(100, '\n');
+			} // end else
+		} while (invalid); // while input is invalid
+
+		// Set flag and variable for deposit amount
+		invalid = true;
+		double tempDeposit;
+
+		do
+		{
+			// Ask for amount
+			cout << "How much are you depositing?" << endl;
+
+			// Input Invalidation
+			if (cin >> tempDeposit)
+			{
+				// If invalid display message
+				if (tempDeposit < 0)
+					cout << "An invalid entry has been entered. Please try again" << endl;
+
+				// Otherwise set flag to false
+				else
+					invalid = false;
+			} // end if
+
+			// Not an int display message
+			else
+			{
+				cin.clear();
+				cin.ignore(100, '\n');
+				cout << "An invalid entry has been entered. Please try again" << endl;
+			} // end else
+
+		} while (invalid); // while input is invalid
+
+		// Find the position with the account number from which the user wants to deposit to
+		int position;
+		for (int count = 0; count < numOfAccts; count++)
+		{
+			if (accounts[count]->getAccountNum() == tempAcctNum)
+				position = count;
+		} // end for loop
+
+		// Deposit amount
+		accounts[position]->deposit(tempDeposit);
+
+		// Display message about the deposit
+		cout << "The deposit was successful. The new balance is $" << fixed << setprecision(2) << accounts[position]->getBalance() << endl;
+	} // end outer most else
+	cout << endl;
+} // end deposit
+
+/************************************************************************************************************************
+FUNCT: withdraw
+DESCR: This function will accept an array of pointers and the number of accounts saved. The function is to withdraw 
+	   from the balance of the account. If no accounts exist a message will be displayed. Otherwise, it will ask
+	   for the account number. Input validation will occur to ensure an account exists with such account number.
+	   Then the withdrawal number will be asked and input validation will occur to ensure it is a valid int. Finally
+	   it will then withdraw from the account the amount and display new balance.
+***************************************************************************************************************************/
+void withdraw(Bank *accounts[], const int numOfAccts)
+{
+	// If no accounts exist display message
+	if (numOfAccts == 0)
+		cout << "There are no accounts saved." << endl;
+
+	else
+	{
+		// Set variables for loop and hold temporary account number 
+		int tempAcctNum;
+		bool invalid = true;
+		do
+		{
+			// Ask for account number 
+			cout << "Please enter the account number from which you wish to withdraw from:" << endl;
+
+			// Perform input validation
+			if (cin >> tempAcctNum)
+			{
+				if (searchAcctNum(accounts, numOfAccts, tempAcctNum))
+					invalid = false;
+
+				// If not found
+				else
+					cout << "No account was found with such account number. Please try again" << endl;
+			} // end if
+
+			// If an int wasn't entered
+			else
+			{
+				cout << "An invalid entry has been entered. Please try again." << endl;
+				cin.clear();
+				cin.ignore(100, '\n');
+			} // end else
+		} while (invalid); // while input is invalid
+
+		// Variable for amount and set flag
+		invalid = true;
+		double tempWithdraw;
+
+		do
+		{
+			// Ask for amount
+			cout << "How much are you withdrawing?" << endl;
+
+			// Input validation
+			if (cin >> tempWithdraw)
+			{
+				if (tempWithdraw < 0)
+					cout << "An invalid entry has been entered. Please try again" << endl;
+				else
+					invalid = false;
+			} // end if
+
+			// Input validation
+			else
+			{
+				cin.clear();
+				cin.ignore(100, '\n');
+				cout << "An invalid entry has been entered. Please try again" << endl;
+			} // end else
+		} while (invalid); // while input is invalid
+
+		// Find position of the account with that account number
+		int position;
+		for (int count = 0; count < numOfAccts; count++)
+		{
+			// Store position
+			if (accounts[count]->getAccountNum() == tempAcctNum)
+				position = count;
+		} // end for loop
+
+		// withdraw amount and store the message returned
+		string message = accounts[position]->withdraw(tempWithdraw);
+
+		// If the withdrawal is larger than the balance display message
+		if (message == "Insufficient Balance")
+			cout << message << endl;
+
+		// Otherwise display new balance
+		else
+			cout << "Withdrawal has been successful. Your new balance is $" << fixed << setprecision(2) << accounts[position]->getBalance() << endl;
+	} // end outer most else
+	cout << endl;
+} // end withdraw
+
+/*************************************************************************************************************************
+FUNCT: displayAccountInfo
+DESCR: This function will accept the array of pointers and the number of accounts. If no accounts exist a message will
+	   be displayed. Otherwise all accounts will be displayed based on account type.
+***************************************************************************************************************************/
+void displayAccountInfo(Bank *accounts[], const int numOfAccts)
+{
+	// If no accounts exist display message
+	if (numOfAccts == 0)
+		cout << "There are no accounts saved." << endl;
+
+	else
+	{
+		
+		bool found = false;
+		
+		// Display Header for Savings Account
+		cout << left << setw(15) << "Account#"      << left << setw(15) << "Name" << left << setw(15) << "Balance" << left << setw(15) << "Account Type"
+			 << left << setw(15) << "Interest Rate" << left << setw(15) << "Compounded Period" << endl;
+
+		// Display all accounts that are type Savings
+		for (int count = 0; count < numOfAccts; count++)
+		{
+			if (accounts[count]->getAcctType() == 'S')
+			{
+				found = true;
+				cout << left << setw(15) << accounts[count]->getAccountNum() << left << setw(15) << accounts[count]->getName()
+					<< left << "$" << setw(14) << accounts[count]->getBalance()
+					<< left << setw(15) << accounts[count]->getAcctType() << left << setw(4) << (static_cast<Savings*>(accounts[count])->getInterestRate() * 100) << "%" << right
+					<< setw(12) << static_cast<Savings*>(accounts[count])->getCompoundedPeriod() << " Days";
+				cout << endl;
+			} // end if
+			
+		} // end for loop
+
+		// If no accounts type saving were found display message
+		if (!found)
+			cout << "There are no accounts type Savings" << endl;
+		cout << endl;
+		found = false;
+
+		// Display Header for Checking Account
+		cout << left << setw(15) << "Account#" << left << setw(15) << "Name" << left << setw(15) << "Balance" << left << setw(15) << "Account Type"
+			<< left << setw(15) << "Min Balance" << left << setw(15) << "Monthly Fee" << endl;
+		
+		// Display all counts type checking
+		for (int count = 0; count < numOfAccts; count++)
+		{
+			if (accounts[count]->getAcctType() == 'C')
+			{
+				found = true;
+				cout << left << setw(15) << accounts[count]->getAccountNum() << left << setw(15) << accounts[count]->getName() << left << "$"<< setw(14) << fixed << setprecision(2) << accounts[count]->getBalance()
+					<< left << setw(15) << accounts[count]->getAcctType() << left << "$" << setw(14) << static_cast<Checking*>(accounts[count])->getMinBalance() << left 
+					<< "$"  << setw(14) << static_cast<Checking*>(accounts[count])->getMonthlyFee();
+				cout << endl;
+			} // end if
+		}// end for loop
+
+		// If no accounts type checking were found then display message
+		if (!found)
+			cout << "There are no accounts type Checking" << endl;
+	} // end outer most else
+	cout << endl;
+} // end displayInfo
+
+/********************************************************************************************************************************
+FUNCT: addInterest
+DESCR: This function will accept the array of pointers and the number of accounts. It will add interest to a savings
+	   account depending on how many periods have past since the last addition to the balance of the savings account.
+	   First it will determine if there are accounts saved. If not then a message will appear. Otherwise it will 
+	   ask for the account number. Input validation will occur and once a valid account number is entered and it is a
+	   savings account then it will ask for how many days have past since the last period. It will then calculate
+	   the interest added and display the new balance.
+**********************************************************************************************************************************/
+void addInterest(Bank *accounts[], const int numOfAccts)
+{
+	// If no accounts exist then display message.
+	if (numOfAccts == 0)
+		cout << "There are no accounts saved." << endl;
+
+	else
+	{
+		// Variables to hold the position of the account, temporary account number, and a flag variable
+		int tempAcctNum;
+		bool invalid = true;
+		int position;
+
+		do
+		{
+			// Ask for the account number
+			cout << "Please enter the account number from which you want to see the new balance:" << endl;
+
+			// If an int is entered
+			if (cin >> tempAcctNum)
+			{
+				// Loop through all accounts to see if it matches with the temporary account number
+				for (int count = 0; count < numOfAccts; count++)
+				{
+					// If it matches
+					if (accounts[count]->getAccountNum() == tempAcctNum)
+					{
+						// If the account is a type savings account
+						if (accounts[count]->getAcctType() == 'S')
+						{
+							// Set the flag to false and store position
+							invalid = false;
+							position = count;
+						} // end if
+
+						// Otherwise display that this isn't a savings account message
+						else
+							cout << "This account is not a savings account. Please try again." << endl;
+					} // end if (acctNum == tempAcctNum)
+
+					// If no account exist with such account number display message
+					else if ((count + 1) == numOfAccts && invalid)
+						cout << "No account was found with such account number. Please try again" << endl;
+				} // end for loop
+			} // end outer most if
+
+			// If an int is not entered display error message
+			else
+			{
+				cout << "An invalid entry has been entered. Please try again." << endl;
+				cin.clear();
+				cin.ignore(100, '\n');
+			} // end else
+
+		} while (invalid); // while input is invalid
+
+		// Variable for days and set flag to true
+		int days;
+		invalid = true;
+
+		do
+		{
+			// Ask for the amount of days that have past
+			cout << "How many days have past since the last period?" << endl;
+
+			// Input validation
+			if (cin >> days)
+			{
+				// Invalid input display message
+				if (days < 0)
+					cout << "An invalid entry has been entered. Please try again" << endl;
+				else
+					invalid = false;
+			} // end if 
+
+			// If not an int: input validation
+			else
+			{
+				cin.clear();
+				cin.ignore(100, '\n');
+				cout << "An invalid entry has been entered. Please try again" << endl;
+			} // end else
+		} while (invalid); // while input is not valid
+
+		// Create variable to hold temporary balance
+		double tempBalance;
+
+		// Add interest
+		tempBalance = static_cast<Savings*>(accounts[position])->addInterestRate(days);
+
+		// Display new balance
+		cout << "Your new balance is $" << fixed << setprecision(2) << tempBalance << endl;
+	} // end outer most else
+	cout << endl;
+} // end addInterest

@@ -1,0 +1,12 @@
+True
+True
+True
+37 47 109 475 694 88
+22 19 109 475 694 88
+71
+False
+True
+116
+NULL
+ERROR
+ERROR

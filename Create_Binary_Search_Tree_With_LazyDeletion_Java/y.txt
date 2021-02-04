@@ -1,0 +1,46 @@
+true
+true
+true
+true
+true
+true
+Error in insert: IllegalArgumentException raised
+true
+true
+true
+true
+true
+Error in insert: IllegalArgumentException raised
+false
+true
+true
+true
+true
+true
+true
+true
+true
+true
+true
+50 40 30 20 10 1 5 15 25 35 45 60 55 70 65 80 75 90 85 99 95 
+true
+true
+true
+Error in delete: IllegalArgumentException raised
+false
+false
+true
+true
+10
+90
+Error in Line: jdjfd
+Error in Line: sjdf
+false
+false
+false
+true
+6
+Error in Line: fjdjkfdklsd
+21
+50 40 30 20 10 *1 *5 15 25 35 45 60 55 70 *65 80 75 90 85 *99 *95 
+Error in Line: dfdj

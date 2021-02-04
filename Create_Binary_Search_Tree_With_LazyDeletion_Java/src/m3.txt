@@ -1,0 +1,34 @@
+True
+True
+True
+True
+True
+True
+True
+True
+True
+True
+True
+Error in insert: IllegalArgumentException raised
+Error in insert: IllegalArgumentException raised
+50 40 30 20 10 1 60 70 80 90 99 
+True
+50 40 30 20 10 *1 60 70 80 90 99 
+True
+50 40 30 20 10 *1 *60 70 80 90 99 
+False
+50 40 30 20 10 *1 60 70 80 90 99 
+False
+True
+True
+False
+50 40 30 20 10 *1 60 70 68 80 90 *99 
+True
+True
+20
+80
+5
+12
+50 40 30 20 *10 *1 60 70 68 80 *90 *99 
+True
+*50 40 30 20 *10 *1 60 70 68 80 *90 *99 
